@@ -1,0 +1,83 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <inttypes.h>
+#include <math.h>
+
+#define N 4800
+#define P 48
+
+#define W (768)
+
+#define fs 48000.0
+#define fc 1500.0
+
+#define Wc (2*pi*fc/fs)
+//double pi = 4 * atan(1);
+//Wc = (2*pi*fc/fs);
+
+#define Q 12
+#define FS (1<<Q)
+
+
+
+void conv(int16_t *x, int16_t *y, int16_t *h, int n) {
+
+	//compute h
+	double pi = 4 * atan(1);
+	//insert your code here
+	if (-W / 2 <= n && n < W / 2)
+	{
+		h[n] = Wc / pi * sin(Wc * n) / Wc * n;
+	}
+
+	//compute y
+	//insert your code here
+	int i;
+	y[n] = 0;
+	for (i = -W / 2; i <= (W / 2) - 1; i++)
+	{
+		if ((n + i>0) && (n + i< N))
+			y[n] += h[i] * x[n + i];
+	}
+
+}
+
+int main() {
+
+	int16_t *x = calloc(N, sizeof(int16_t));
+	int16_t *y = calloc(N, sizeof(int16_t));
+	int16_t *h = calloc(W, sizeof(int16_t));
+
+	//generate input signal x
+	//insert your code here
+	for (int n = 0; n < N; n++) 
+	{
+		x[n] = ((n % 48) > 23);
+	}
+
+	//run the convolution
+	for (int n = 0; n < N; n++)
+	{
+		conv(x, y, h, n);
+	}
+
+	//print output files
+	//FILE *fpx = fopen("x.dat","w");
+	//FILE *fpxh = fopen("x.hex","w");
+	//FILE *fpy = fopen("y.dat","w");
+	//FILE *fph = fopen("h.dat","w");
+	//FILE *fphh = fopen("h.hex","w");
+
+	//print x and y
+	//insert your code here
+	for (int n = 0; n < N; n++) {
+		printf("x = %d, y = %d\n", x[n], y[n]);
+	}
+
+	//print h
+	//insert your code here
+	for (int n = 0; n < N; n++) {
+		printf("h = %d\n", h[n]);
+	}
+	return 0;
+}
